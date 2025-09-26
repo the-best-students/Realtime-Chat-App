@@ -3,10 +3,10 @@ const router = express.Router();
 import { login, register, logout } from '../controllers/authController.js';
 
 // Dummy login route
-router.get('/login', login);
+router.post('/login', login);
 
 // Dummy register route
-router.get('/register', register);
+router.post('/register', register);
 
 // Dummy logout route
 router.get('/logout', logout);
