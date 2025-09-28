@@ -9,6 +9,6 @@ router.post('/login', login);
 router.post('/register', register);
 
 // Dummy logout route
-router.get('/logout', logout);
+router.post('/logout', logout);
 
 export default router;

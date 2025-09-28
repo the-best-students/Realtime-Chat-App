@@ -4,7 +4,7 @@ import ENV from './lib/env.js';
 import cookieParser from 'cookie-parser';
 
 const app = express();
-connectDb();
+
 import authRoutes from './routes/authRoutes.js';
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -14,6 +14,7 @@ const PORT = ENV.PORT || 8080;
 
 app.use('/auth', authRoutes);
 
-app.listen(PORT, () =>
-  console.log(`listening on port :http://localhost:${PORT}`)
-);
+app.listen(PORT, () => {
+  connectDb();
+  console.log(`listening on port :http://localhost:${PORT}`);
+});

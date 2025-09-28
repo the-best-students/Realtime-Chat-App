@@ -81,22 +81,27 @@ const register = asyncHandler(async (req, res) => {
     profilePic,
   });
 
-  if (newUser) {
-    // Generate token and send response
+  // Generate token and send response
+  try {
     generateToken(newUser._id, res);
-    return res.status(201).json({
+
+    return res.status(200).json({
       _id: newUser._id,
       fullName: newUser.fullName,
       email: newUser.email,
       profilePic: newUser.profilePic,
     });
-  } else {
-    return res.status(400).json({ message: 'Invalid user data' });
+  } catch (error) {
+    console.error('Token generation failed:', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 });
 
 const logout = (req, res) => {
   // Handle logout logic
+  res.cookie('jwt', '', {
+    maxAge: 0, // MS
+  });
   res.status(200).json({ message: 'Logout successful' });
 };
 
