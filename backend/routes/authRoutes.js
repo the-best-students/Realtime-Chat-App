@@ -5,6 +5,7 @@ import {
   register,
   logout,
   updateProfile,
+  checkedUser,
 } from '../controllers/authController.js';
 import { protectedRoute } from '../middleware/protectRoute.js';
 
@@ -20,5 +21,7 @@ router.post('/logout', logout);
 // update profile
 
 router.put('/updatePro', protectedRoute, updateProfile);
+
+router.get('/check', protectedRoute, checkedUser);
 
 export default router;
