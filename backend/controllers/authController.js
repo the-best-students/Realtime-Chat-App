@@ -4,6 +4,7 @@ import asyncHandler from 'express-async-handler';
 import bcrypt from 'bcryptjs';
 import User from '../models/User.js'; // Add `.js` if you're using ESM
 import { generateToken } from '../lib/utils.js';
+import { cloudinary } from '../lib/configCloudinary.js';
 
 // (e.g., login, signup, logout)
 
@@ -105,4 +106,24 @@ const logout = (req, res) => {
   res.status(200).json({ message: 'Logout successful' });
 };
 
-export { login, register, logout };
+const updateProfile = asyncHandler(async (req, res) => {
+  const { fullName, email } = req.body;
+  if (!fullName)
+    return res.status(400).json({ message: 'fullName is required' });
+  const userId = req.user._id;
+  // const uploadResponse = await cloudinary.uploader.upload(profilePic);
+
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    {
+      fullName,
+      email,
+      // profilePic: uploadResponse.secure_url,
+    },
+    { new: true }
+  );
+
+  res.status(200).json(updatedUser);
+});
+
+export { login, register, logout, updateProfile };
