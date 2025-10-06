@@ -1,7 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import Message from '../models/Message.js';
 import User from '../models/User.js';
-import { cloudinary } from '../lib/configCloudinary.js';
+import cloudinary from '../lib/configCloudinary.js';
 
 //getAllContacts
 

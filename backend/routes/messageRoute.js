@@ -1,14 +1,14 @@
 import { Router } from 'express';
 
-import { protectedRoute } from '../middleware/protectRoute.js';
 import {
   getAllContacts,
   getChatPartners,
   getMessagesByUserId,
   sendMessage,
 } from '../controllers/messageController.js';
+import { protectRoute } from '../middleware/protectRoute.js';
 const router = Router();
-router.use(protectedRoute);
+router.use(protectRoute);
 router.get('/contacts', getAllContacts);
 router.get('/chats', getChatPartners);
 router.get('/:id', getMessagesByUserId);

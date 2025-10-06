@@ -1,45 +1,20 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
+import { useAuthStore } from '../../store/useAuthStore';
 
 const SignUpScreen = () => {
   const [formData, setFormData] = useState({
-    username: '',
+    fullName: '',
     email: '',
     password: '',
   });
 
-  // State for loading/submission status (optional, but good practice)
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState('');
+  const { register, isSigningUp } = useAuthStore();
 
-  // Handler for all input changes
-  const handleChange = useCallback((e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  }, []);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    register(formData);
+  };
 
-  // Handler for form submission
-  const handleSubmit = useCallback(
-    (e) => {
-      e.preventDefault();
-      setIsSubmitting(true);
-      setMessage('Processing...');
-
-      // Simulate an API call delay
-      setTimeout(() => {
-        console.log('Form data submitted:', formData);
-        setIsSubmitting(false);
-        // In a real app, you would handle authentication here (e.g., Firebase Auth)
-        setMessage('Account created successfully! Check the console for data.');
-
-        // Reset form after submission
-        setFormData({ username: '', email: '', password: '' });
-      }, 1500);
-    },
-    [formData]
-  );
   return (
     <div className='w-full max-w-md space-y-8'>
       {/* Title and Subtitle */}
@@ -52,30 +27,25 @@ const SignUpScreen = () => {
         </p>
       </div>
 
-      {/* Submission Message */}
-      {message && (
-        <div className='p-3 text-center text-sm rounded-lg bg-indigo-100 dark:bg-indigo-900/50 text-indigo-800 dark:text-indigo-200 font-medium'>
-          {message}
-        </div>
-      )}
-
       {/* Registration Form */}
       <form className='space-y-6' onSubmit={handleSubmit}>
         <div className='rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 -space-y-px overflow-hidden'>
           {/* Username Input */}
           <div>
-            <label htmlFor='username' className='sr-only'>
-              Username
+            <label htmlFor='fullname' className='sr-only'>
+              fullName
             </label>
             <input
-              id='username'
-              name='username'
+              id='fullname'
+              name='fullname'
               type='text'
               required
-              placeholder='Username'
-              value={formData.username}
-              onChange={handleChange}
-              disabled={isSubmitting}
+              placeholder='fullName'
+              value={formData.fullName}
+              onChange={(e) =>
+                setFormData({ ...formData, fullName: e.target.value })
+              }
+              disabled={isSigningUp}
               className='appearance-none rounded-t-xl relative block w-full px-4 py-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 placeholder-gray-500 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 sm:text-base'
             />
           </div>
@@ -93,8 +63,10 @@ const SignUpScreen = () => {
               required
               placeholder='Email address'
               value={formData.email}
-              onChange={handleChange}
-              disabled={isSubmitting}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+              disabled={isSigningUp}
               // Removed rounded-t/b-lg classes to blend the inputs
               className='appearance-none relative block w-full px-4 py-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 placeholder-gray-500 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 sm:text-base'
             />
@@ -113,8 +85,10 @@ const SignUpScreen = () => {
               required
               placeholder='Password'
               value={formData.password}
-              onChange={handleChange}
-              disabled={isSubmitting}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+              disabled={isSigningUp}
               className='appearance-none rounded-b-xl relative block w-full px-4 py-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 placeholder-gray-500 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 sm:text-base'
             />
           </div>
@@ -124,10 +98,10 @@ const SignUpScreen = () => {
         <div>
           <button
             type='submit'
-            disabled={isSubmitting}
+            disabled={isSigningUp}
             className='group relative w-full flex justify-center py-3 px-4 border border-transparent text-lg font-medium rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 shadow-lg disabled:opacity-50'
           >
-            {isSubmitting ? (
+            {isSigningUp ? (
               <svg
                 className='animate-spin -ml-1 mr-3 h-5 w-5 text-white'
                 xmlns='http://www.w3.org/2000/svg'

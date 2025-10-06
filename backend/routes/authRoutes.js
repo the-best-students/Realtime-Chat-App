@@ -1,27 +1,22 @@
 import express from 'express';
-const router = express.Router();
 import {
   login,
-  register,
   logout,
+  signup,
   updateProfile,
-  checkedUser,
 } from '../controllers/authController.js';
-import { protectedRoute } from '../middleware/protectRoute.js';
+import { protectRoute } from '../middleware/protectRoute.js';
 
-// Dummy login route
+const router = express.Router();
+
+router.post('/signup', signup);
 router.post('/login', login);
-
-// Dummy register route
-router.post('/register', register);
-
-// Dummy logout route
 router.post('/logout', logout);
 
-// update profile
+router.put('/update-profile', protectRoute, updateProfile);
 
-router.put('/updatePro', protectedRoute, updateProfile);
-//check if user logged in currently
-router.get('/check', protectedRoute, checkedUser);
+router.get('/check', protectRoute, (req, res) =>
+  res.status(200).json(req.user)
+);
 
 export default router;

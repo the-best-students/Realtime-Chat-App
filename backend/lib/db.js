@@ -1,7 +1,7 @@
 //connect mongoose to mongodb
 import { connect } from 'mongoose';
 import colors from 'colors';
-import ENV from './env.js';
+import { ENV } from './env.js';
 
 const connectDb = async () => {
   try {
