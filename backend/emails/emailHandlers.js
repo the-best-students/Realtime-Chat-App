@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import { createWelcomeEmailTemplate } from '../emails/emailTemplates.js';
-import ENV from '../lib/env.js';
+import { ENV } from '../lib/env.js';
 
 // Create a transporter
 const transporter = nodemailer.createTransport({

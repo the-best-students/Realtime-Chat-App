@@ -1,4 +1,4 @@
-// import { sendWelcomeEmail } from '../emails/emailHandlers.js';
+import { sendWelcomeEmail } from '../emails/emailHandlers.js';
 import { generateToken } from '../lib/utils.js';
 import User from '../models/User.js';
 import bcrypt from 'bcryptjs';
@@ -51,12 +51,12 @@ export const signup = asyncHandler(async (req, res) => {
     profilePic: savedUser.profilePic,
   });
 
-  // Fire-and-forget welcome email
-  // sendWelcomeEmail(savedUser.email, savedUser.fullName, ENV.CLIENT_URL).catch(
-  //   (error) => {
-  //     console.error('Failed to send welcome email:', error);
-  //   }
-  // );
+  //! Fire-and-forget welcome email
+  sendWelcomeEmail(savedUser.email, savedUser.fullName, ENV.CLIENT_URL).catch(
+    (error) => {
+      console.error('Failed to send welcome email:', error);
+    }
+  );
 });
 
 // @desc    Login user

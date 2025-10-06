@@ -1,11 +1,10 @@
 import asyncHandler from 'express-async-handler';
+import { getReceiverSocketId, io } from '../lib/socket.js';
 import Message from '../models/Message.js';
 import User from '../models/User.js';
 import cloudinary from '../lib/configCloudinary.js';
 
-//getAllContacts
-
-const getAllContacts = asyncHandler(async (req, res) => {
+export const getAllContacts = asyncHandler(async (req, res) => {
   const loggedInUserId = req.user._id;
   const filteredUsers = await User.find({
     _id: { $ne: loggedInUserId },
@@ -14,8 +13,7 @@ const getAllContacts = asyncHandler(async (req, res) => {
   res.status(200).json(filteredUsers);
 });
 
-//getMessagesByUserId
-const getMessagesByUserId = asyncHandler(async (req, res) => {
+export const getMessagesByUserId = asyncHandler(async (req, res) => {
   const myId = req.user._id;
   const { id: userToChatId } = req.params;
 
@@ -29,26 +27,25 @@ const getMessagesByUserId = asyncHandler(async (req, res) => {
   res.status(200).json(messages);
 });
 
-//sendMessage
-
-const sendMessage = asyncHandler(async (req, res) => {
+export const sendMessage = asyncHandler(async (req, res) => {
   const { text, image } = req.body;
   const { id: receiverId } = req.params;
   const senderId = req.user._id;
 
   if (!text && !image) {
-    return res.status(400).json({ message: 'Text or image is required.' });
+    res.status(400);
+    throw new Error('Text or image is required.');
   }
 
   if (senderId.equals(receiverId)) {
-    return res
-      .status(400)
-      .json({ message: 'Cannot send messages to yourself.' });
+    res.status(400);
+    throw new Error('Cannot send messages to yourself.');
   }
 
   const receiverExists = await User.exists({ _id: receiverId });
   if (!receiverExists) {
-    return res.status(404).json({ message: 'Receiver not found.' });
+    res.status(404);
+    throw new Error('Receiver not found.');
   }
 
   let imageUrl;
@@ -66,12 +63,15 @@ const sendMessage = asyncHandler(async (req, res) => {
 
   await newMessage.save();
 
+  const receiverSocketId = getReceiverSocketId(receiverId);
+  if (receiverSocketId) {
+    io.to(receiverSocketId).emit('newMessage', newMessage);
+  }
+
   res.status(201).json(newMessage);
 });
 
-//getChatPartners
-
-const getChatPartners = asyncHandler(async (req, res) => {
+export const getChatPartners = asyncHandler(async (req, res) => {
   const loggedInUserId = req.user._id;
 
   const messages = await Message.find({
@@ -94,5 +94,3 @@ const getChatPartners = asyncHandler(async (req, res) => {
 
   res.status(200).json(chatPartners);
 });
-
-export { getAllContacts, getMessagesByUserId, sendMessage, getChatPartners };
