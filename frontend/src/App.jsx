@@ -2,14 +2,12 @@
 
 // Main application component
 import React from 'react';
-import Header from './components/Header';
 import Main from './components/Main';
 import { Toaster } from 'react-hot-toast';
 
 const App = () => {
   return (
     <div className='min-h-screen font-sans bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex flex-col'>
-      {/* <Header /> */}
       <Main />
       <Toaster />
     </div>

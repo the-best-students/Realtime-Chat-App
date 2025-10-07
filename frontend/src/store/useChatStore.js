@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import axios from 'axios';
+import { axiosInstance } from '../../lib/axios';
 import toast from 'react-hot-toast';
 import { useAuthStore } from './useAuthStore';
 
@@ -24,7 +24,7 @@ export const useChatStore = create((set, get) => ({
   getAllContacts: async () => {
     set({ isUsersLoading: true });
     try {
-      const res = await axios.get('/message/contacts');
+      const res = await axiosInstance.get('/messages/contacts');
       set({ allContacts: res.data });
     } catch (error) {
       toast.error(error.response.data.message);
@@ -35,7 +35,7 @@ export const useChatStore = create((set, get) => ({
   getMyChatPartners: async () => {
     set({ isUsersLoading: true });
     try {
-      const res = await axios.get('/message/chats');
+      const res = await axiosInstance.get('/messages/chats');
       set({ chats: res.data });
     } catch (error) {
       toast.error(error.response.data.message);
@@ -47,7 +47,7 @@ export const useChatStore = create((set, get) => ({
   getMessagesByUserId: async (userId) => {
     set({ isMessagesLoading: true });
     try {
-      const res = await axios.get(`/messages/${userId}`);
+      const res = await axiosInstance.get(`/messages/${userId}`);
       set({ messages: res.data });
     } catch (error) {
       toast.error(error.response?.data?.message || 'Something went wrong');
@@ -75,7 +75,7 @@ export const useChatStore = create((set, get) => ({
     set({ messages: [...messages, optimisticMessage] });
 
     try {
-      const res = await axios.post(
+      const res = await axiosInstance.post(
         `/messages/send/${selectedUser._id}`,
         messageData
       );

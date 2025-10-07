@@ -1,16 +1,37 @@
 import React from 'react';
 
-import { Route, Routes } from 'react-router-dom';
-import SignUpScreen from '../pages/auth/SignUpScreen.jsx';
-import SignInScreen from '../pages/auth/SignInScreen.jsx';
-import ChatContainer from './ChatContainer.jsx';
+import { Navigate, Route, Routes } from 'react-router-dom';
+
+import SignUpPage from '../pages/auth/SignUpPage.jsx';
+import LoginPage from '../pages/auth/LoginPage.jsx';
+import ChatPage from '../pages/ChatPage.jsx';
+import PageLoader from './PageLoader.jsx';
+import { useAuthStore } from '../store/useAuthStore.js';
+import { useEffect } from 'react';
+
 const Main = () => {
+  const { checkAuth, isCheckingAuth, authUser } = useAuthStore();
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  if (isCheckingAuth) return <PageLoader />;
   return (
-    <div className='flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8'>
+    <div className='min-h-screen bg-slate-900 relative flex items-center justify-center p-4 overflow-hidden'>
       <Routes>
-        <Route path='/signup' element={<SignUpScreen />} />
-        <Route path='/signIn' element={<SignInScreen />} />
-        <Route path='/chat' element={<ChatContainer />} />
+        <Route
+          path='/'
+          element={authUser ? <ChatPage /> : <Navigate to={'/login'} />}
+        />
+        <Route
+          path='/login'
+          element={!authUser ? <LoginPage /> : <Navigate to={'/'} />}
+        />
+        <Route
+          path='/signup'
+          element={!authUser ? <SignUpPage /> : <Navigate to={'/'} />}
+        />
       </Routes>
     </div>
   );
