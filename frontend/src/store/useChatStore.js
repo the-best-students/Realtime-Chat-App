@@ -11,34 +11,40 @@ export const useChatStore = create((set, get) => ({
   selectedUser: null,
   isUsersLoading: false,
   isMessagesLoading: false,
-  isSoundEnabled: JSON.parse(localStorage.getItem('isSoundEnabled')) === true,
+  isSoundEnabled: JSON.parse(localStorage.getItem('isSoundEnabled') || 'false'),
 
+  // ------------------ UI state ------------------
   toggleSound: () => {
-    localStorage.setItem('isSoundEnabled', !get().isSoundEnabled);
-    set({ isSoundEnabled: !get().isSoundEnabled });
+    const newValue = !get().isSoundEnabled;
+    localStorage.setItem('isSoundEnabled', JSON.stringify(newValue));
+    set({ isSoundEnabled: newValue });
   },
 
   setActiveTab: (tab) => set({ activeTab: tab }),
   setSelectedUser: (selectedUser) => set({ selectedUser }),
 
+  // ------------------ API calls ------------------
   getAllContacts: async () => {
     set({ isUsersLoading: true });
     try {
       const res = await axiosInstance.get('/messages/contacts');
-      set({ allContacts: res.data });
+      set({ allContacts: Array.isArray(res.data) ? res.data : [] });
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || 'Failed to load contacts');
+      set({ allContacts: [] });
     } finally {
       set({ isUsersLoading: false });
     }
   },
+
   getMyChatPartners: async () => {
     set({ isUsersLoading: true });
     try {
       const res = await axiosInstance.get('/messages/chats');
-      set({ chats: res.data });
+      set({ chats: Array.isArray(res.data) ? res.data : [] });
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || 'Failed to load chats');
+      set({ chats: [] });
     } finally {
       set({ isUsersLoading: false });
     }
@@ -48,18 +54,22 @@ export const useChatStore = create((set, get) => ({
     set({ isMessagesLoading: true });
     try {
       const res = await axiosInstance.get(`/messages/${userId}`);
-      set({ messages: res.data });
+      set({ messages: Array.isArray(res.data) ? res.data : [] });
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Something went wrong');
+      toast.error(error.response?.data?.message || 'Failed to load messages');
+      set({ messages: [] });
     } finally {
       set({ isMessagesLoading: false });
     }
   },
 
+  // ------------------ Sending messages ------------------
   sendMessage: async (messageData) => {
-    const { selectedUser, messages } = get();
-    const { authUser } = useAuthStore.getState();
+    const { selectedUser } = get();
+    if (!selectedUser) return toast.error('No user selected');
 
+    const { messages } = get();
+    const { authUser } = useAuthStore.getState();
     const tempId = `temp-${Date.now()}`;
 
     const optimisticMessage = {
@@ -69,42 +79,57 @@ export const useChatStore = create((set, get) => ({
       text: messageData.text,
       image: messageData.image,
       createdAt: new Date().toISOString(),
-      isOptimistic: true, // flag to identify optimistic messages (optional)
+      isOptimistic: true,
     };
-    // immidetaly update the ui by adding the message
-    set({ messages: [...messages, optimisticMessage] });
+
+    // Add optimistic message
+    set({
+      messages: [
+        ...(Array.isArray(messages) ? messages : []),
+        optimisticMessage,
+      ],
+    });
 
     try {
       const res = await axiosInstance.post(
         `/messages/send/${selectedUser._id}`,
         messageData
       );
-      set({ messages: messages.concat(res.data) });
+      // Replace optimistic message with server response
+      set({
+        messages: [
+          ...(Array.isArray(messages) ? messages : []).filter(
+            (m) => m._id !== tempId
+          ),
+          res.data,
+        ],
+      });
     } catch (error) {
-      // remove optimistic message on failure
-      set({ messages: messages });
-      toast.error(error.response?.data?.message || 'Something went wrong');
+      // Remove optimistic message on failure
+      set({ messages: Array.isArray(messages) ? messages : [] });
+      toast.error(error.response?.data?.message || 'Failed to send message');
     }
   },
 
+  // ------------------ Socket.IO ------------------
   subscribeToMessages: () => {
     const { selectedUser, isSoundEnabled } = get();
     if (!selectedUser) return;
 
     const socket = useAuthStore.getState().socket;
+    if (!socket) return;
 
     socket.on('newMessage', (newMessage) => {
-      const isMessageSentFromSelectedUser =
-        newMessage.senderId === selectedUser._id;
-      if (!isMessageSentFromSelectedUser) return;
+      const currentMessages = Array.isArray(get().messages)
+        ? get().messages
+        : [];
+      if (newMessage.senderId !== selectedUser._id) return;
 
-      const currentMessages = get().messages;
       set({ messages: [...currentMessages, newMessage] });
 
       if (isSoundEnabled) {
         const notificationSound = new Audio('/sounds/notification.mp3');
-
-        notificationSound.currentTime = 0; // reset to start
+        notificationSound.currentTime = 0;
         notificationSound
           .play()
           .catch((e) => console.log('Audio play failed:', e));
@@ -114,6 +139,7 @@ export const useChatStore = create((set, get) => ({
 
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
+    if (!socket) return;
     socket.off('newMessage');
   },
 }));
