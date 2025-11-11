@@ -1,13 +1,12 @@
 import { useState } from 'react';
-import BorderAnimatedContainer from '../../components/BorderAnimatedContainer';
 import { useAuthStore } from '../../store/useAuthStore';
-
 import {
-  MessageCircleIcon,
+  MessagesSquareIcon,
   LockIcon,
   MailIcon,
   UserIcon,
   LoaderIcon,
+  SparklesIcon,
 } from 'lucide-react';
 import { Link } from 'react-router';
 
@@ -25,125 +24,124 @@ function SignUpPage() {
   };
 
   return (
-    <div className='w-full flex items-center justify-center p-4 bg-slate-900'>
-      <div className='relative w-full max-w-6xl md:h-[800px] h-[650px]'>
-        <BorderAnimatedContainer>
-          <div className='w-full flex flex-col md:flex-row'>
-            {/* FORM CLOUMN - LEFT SIDE */}
-            <div className='md:w-1/2 p-8 flex items-center justify-center md:border-r border-slate-600/30'>
-              <div className='w-full max-w-md'>
-                {/* HEADING TEXT */}
-                <div className='text-center mb-8'>
-                  <MessageCircleIcon className='w-12 h-12 mx-auto text-slate-400 mb-4' />
-                  <h2 className='text-2xl font-bold text-slate-200 mb-2'>
-                    Create Account
-                  </h2>
-                  <p className='text-slate-400'>Sign up for a new account</p>
-                </div>
+    <div className='w-full max-w-5xl bg-slate-800/50 backdrop-blur-lg border border-slate-700/40 rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden'>
+      <div className='w-full md:w-1/2 p-8 lg:p-12 flex flex-col justify-center'>
+        <div className='text-center mb-10'>
+          <MessagesSquareIcon className='w-14 h-14 mx-auto text-indigo-400 mb-4' />
 
-                {/* FORM */}
-                <form onSubmit={handleSubmit} className='space-y-6'>
-                  {/* FULL NAME */}
-                  <div>
-                    <label className='auth-input-label'>Full Name</label>
-                    <div className='relative'>
-                      <UserIcon className='auth-input-icon' />
+          <h2 className='text-3xl font-bold'>Create Your Account ✨</h2>
+          <p className='text-slate-400 mt-2'>
+            Join <span className='text-indigo-400 font-semibold'>ChatWave</span>{' '}
+            and start connecting instantly!
+          </p>
+        </div>
 
-                      <input
-                        type='text'
-                        value={formData.fullName}
-                        onChange={(e) =>
-                          setFormData({ ...formData, fullName: e.target.value })
-                        }
-                        className='input'
-                        placeholder='John Doe'
-                      />
-                    </div>
-                  </div>
-
-                  {/* EMAIL INPUT */}
-                  <div>
-                    <label className='auth-input-label'>Email</label>
-                    <div className='relative'>
-                      <MailIcon className='auth-input-icon' />
-
-                      <input
-                        type='email'
-                        value={formData.email}
-                        onChange={(e) =>
-                          setFormData({ ...formData, email: e.target.value })
-                        }
-                        className='input'
-                        placeholder='johndoe@gmail.com'
-                      />
-                    </div>
-                  </div>
-
-                  {/* PASSWORD INPUT */}
-                  <div>
-                    <label className='auth-input-label'>Password</label>
-                    <div className='relative'>
-                      <LockIcon className='auth-input-icon' />
-
-                      <input
-                        type='password'
-                        value={formData.password}
-                        onChange={(e) =>
-                          setFormData({ ...formData, password: e.target.value })
-                        }
-                        className='input'
-                        placeholder='Enter your password'
-                      />
-                    </div>
-                  </div>
-
-                  {/* SUBMIT BUTTON */}
-                  <button
-                    className='auth-btn btn btn-primary'
-                    type='submit'
-                    disabled={isSigningUp}
-                  >
-                    {isSigningUp ? (
-                      <LoaderIcon className='w-full h-5 animate-spin text-center' />
-                    ) : (
-                      'Create Account'
-                    )}
-                  </button>
-                </form>
-
-                <div className='mt-6 text-center'>
-                  <Link to='/login' className='auth-link'>
-                    Already have an account? Login
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* FORM ILLUSTRATION - RIGHT SIDE */}
-            <div className='hidden md:w-1/2 md:flex items-center justify-center p-6 bg-gradient-to-bl from-slate-800/20 to-transparent'>
-              <div>
-                <img
-                  src='/signup.png'
-                  alt='People using mobile devices'
-                  className='w-full h-auto object-contain'
-                />
-                <div className='mt-6 text-center'>
-                  <h3 className='text-xl font-medium text-cyan-400'>
-                    Start Your Journey Today
-                  </h3>
-
-                  <div className='mt-4 flex justify-center gap-4'>
-                    <span className='auth-badge'>Free</span>
-                    <span className='auth-badge'>Easy Setup</span>
-                    <span className='auth-badge'>Private</span>
-                  </div>
-                </div>
-              </div>
+        <form onSubmit={handleSubmit} className='space-y-6'>
+          {/* FULL NAME */}
+          <div>
+            <label className='block text-slate-300 font-medium mb-2'>
+              Full Name
+            </label>
+            <div className='relative'>
+              <UserIcon className='w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2' />
+              <input
+                type='text'
+                value={formData.fullName}
+                onChange={(e) =>
+                  setFormData({ ...formData, fullName: e.target.value })
+                }
+                className='w-full pl-10 pr-3 py-2 bg-slate-700/40 border border-slate-600 rounded-lg text-slate-100 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none'
+                placeholder='John Doe'
+                required
+              />
             </div>
           </div>
-        </BorderAnimatedContainer>
+
+          {/* EMAIL */}
+          <div>
+            <label className='block text-slate-300 font-medium mb-2'>
+              Email
+            </label>
+            <div className='relative'>
+              <MailIcon className='w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2' />
+              <input
+                type='email'
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+                className='w-full pl-10 pr-3 py-2 bg-slate-700/40 border border-slate-600 rounded-lg text-slate-100 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none'
+                placeholder='you@example.com'
+                required
+              />
+            </div>
+          </div>
+
+          {/* PASSWORD */}
+          <div>
+            <label className='block text-slate-300 font-medium mb-2'>
+              Password
+            </label>
+            <div className='relative'>
+              <LockIcon className='w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2' />
+              <input
+                type='password'
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
+                className='w-full pl-10 pr-3 py-2 bg-slate-700/40 border border-slate-600 rounded-lg text-slate-100 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none'
+                placeholder='••••••••'
+                required
+              />
+            </div>
+          </div>
+
+          {/* SUBMIT BUTTON */}
+          <button
+            type='submit'
+            disabled={isSigningUp}
+            className='w-full py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-semibold text-white flex items-center justify-center transition duration-200 disabled:opacity-70'
+          >
+            {isSigningUp ? (
+              <LoaderIcon className='w-5 h-5 animate-spin text-white' />
+            ) : (
+              'Create Account'
+            )}
+          </button>
+        </form>
+
+        <div className='mt-6 text-center'>
+          <Link
+            to='/login'
+            className='text-indigo-400 hover:text-indigo-300 text-sm transition'
+          >
+            Already have an account? <span className='underline'>Log In</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* RIGHT SIDE — ILLUSTRATION / CHAT PREVIEW */}
+      <div className='hidden md:flex w-1/2 bg-gradient-to-br from-indigo-700/20 to-slate-900/40 items-center justify-center relative'>
+        <div className='absolute inset-0 bg-gradient-to-br from-indigo-800/40 to-slate-900/60 backdrop-blur-md' />
+        <div className='relative z-10 space-y-4 px-8 py-12'>
+          <div className='flex flex-col space-y-2 text-sm'>
+            <div className='self-start bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 px-4 py-2 rounded-xl max-w-[80%]'>
+              Welcome to{' '}
+              <span className='font-semibold text-indigo-300'>ChatWave</span>!
+              💬
+            </div>
+            <div className='self-end bg-slate-700/60 text-slate-200 px-4 py-2 rounded-xl max-w-[80%]'>
+              Thanks! Just signed up 🚀
+            </div>
+            <div className='self-start bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 px-4 py-2 rounded-xl max-w-[80%]'>
+              Let’s start chatting in real time 😄
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
+
 export default SignUpPage;
