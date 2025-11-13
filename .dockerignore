@@ -1,0 +1,17 @@
+# Dependencies
+node_modules
+frontend/node_modules
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+# NOTE: We keep .env for build purposes in the Dockerfile but it's better to
+# manage secrets on Render.
+
+# Other files
+.git
+.vscode
